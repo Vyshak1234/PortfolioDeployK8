@@ -7,7 +7,7 @@ RUN apt-get update && apt-get upgrade -y
 WORKDIR /usr/share/nginx/html
 
 # Copy the custom nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/sites-enabled/
 
 # Expose port 80
 EXPOSE 80
