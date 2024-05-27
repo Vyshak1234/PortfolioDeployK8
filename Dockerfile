@@ -1,17 +1,16 @@
-# Use the official Nginx image as the base image
-FROM nginx:alpine
+FROM nginx:latest
 
-# Set the working directory inside the container
-WORKDIR /Project
+# Update and upgrade packages
+RUN apt-get update && apt-get upgrade -y
 
-# Copy the content of the portfolio website to the working directory
-COPY . /Project
+# Set the working directory
+WORKDIR /usr/share/nginx/html
 
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy the custom nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80 to access the website
+# Expose port 80
 EXPOSE 80
 
-# Start Nginx server
+# Start nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
