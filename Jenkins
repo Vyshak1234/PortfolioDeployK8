@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_USERNAME = 'xxxxxxxxxx'
+        DOCKER_PASSWORD = 'xxxxxxxxxxxxxx'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'Git-Hub-Password', url: 'https://github.com/Vyshak1234/PortfolioDeployK8.git'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t portfolio-website .'
+                sh 'docker tag portfolio-website blitzvyshak/deploy-k8-cluster:portfolio-website'
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh 'docker push blitzvyshak/deploy-k8-cluster:portfolio-website'
+            }
+        }
+        stage('Kubernetes Deployment') {
+            steps {
+                sh 'kubectl apply -f Deployment/configmap.yaml'
+                sh 'kubectl apply -f Deployment/deployment.yaml'
+                sh 'kubectl apply -f Deployment/service.yaml'
+            }
+        }
+    }
+}
